@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>WOLFAITH Engine - The Lost Sheep (A2)</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- React & ReactDOM -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    
+    <!-- Babel for JSX compilation -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&family=Playfair+Display:ital,wght@0,400;0,600;0,800;1,400;1,600&family=Parisienne&display=swap');
+        
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: linear-gradient(135deg, #1a0f0f 0%, #0a0a0a 50%, #050505 100%);
+            color: #f4f4f5; 
+            overflow: hidden; 
+            margin: 0;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        /* Classic Bible Fonts */
+        .font-serif-classic { font-family: 'Playfair Display', serif; }
+        .font-sans-ui { font-family: 'Inter', sans-serif; }
+        .font-script { font-family: 'Parisienne', cursive; }
+
+        /* Color Tokens */
+        .text-sacred-gold { color: #D4AF37; }
+        .bg-sacred-gold { background-color: #D4AF37; }
+        .border-sacred-gold { border-color: #D4AF37; }
+        .bg-burgundy { background-color: #722F37; }
+
+        /* Leather Texture Overlay */
+        .leather-overlay {
+            position: absolute; inset: 0;
+            background-image: url("https://www.transparenttextures.com/patterns/dark-leather.png");
+            opacity: 0.25; mix-blend-mode: overlay; pointer-events: none; z-index: 0;
+        }
+
+        /* Divine Light Glow */
+        .divine-glow {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 90vw; height: 90vw; border-radius: 50%;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.08) 0%, transparent 60%);
+            pointer-events: none; z-index: 0;
+        }
+
+        /* Subtle Cross Watermark */
+        .cross-watermark {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            font-size: 80vh; color: #ffffff; opacity: 0.02; pointer-events: none; z-index: 0;
+            font-family: 'Times New Roman', Times, serif; font-weight: 100;
+        }
+
+        /* Gold Foil Border Frame */
+        .gold-foil-frame {
+            position: fixed; inset: 12px; pointer-events: none; z-index: 50;
+            border: 2px solid rgba(212, 175, 55, 0.2);
+            outline: 1px solid rgba(212, 175, 55, 0.1); outline-offset: 4px;
+        }
+        .gold-foil-frame::before, .gold-foil-frame::after {
+            content: ''; position: absolute; width: 6px; height: 6px; background: #D4AF37;
+        }
+        .gold-foil-frame::before { top: -4px; left: -4px; box-shadow: calc(100vw - 32px) 0 0 #D4AF37; }
+        .gold-foil-frame::after { bottom: -4px; left: -4px; box-shadow: calc(100vw - 32px) 0 0 #D4AF37; }
+
+        /* Burgundy Ribbon Bookmark */
+        .ribbon-bookmark {
+            position: fixed; top: -10px; right: 8%; width: 40px; height: 180px;
+            background: linear-gradient(to bottom, #4a1922, #8a2a3b);
+            z-index: 60; transform: rotate(2deg); box-shadow: -4px 10px 15px rgba(0,0,0,0.8);
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 85%, 0 100%); pointer-events: none;
+        }
+        .ribbon-bookmark::after {
+            content: ''; position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%);
+            width: 20px; height: 2px; background: #D4AF37; opacity: 0.8;
+        }
+
+        /* Classic UI Cards */
+        .bible-card {
+            background: rgba(10, 10, 10, 0.85); backdrop-filter: blur(15px);
+            border: 1px solid rgba(212, 175, 55, 0.2); box-shadow: 0 25px 50px rgba(0,0,0,0.9);
+            border-radius: 4px; position: relative; max-width: 1000px; width: 100%;
+            padding: 3rem; max-height: 80vh; overflow-y: auto;
+        }
+        .bible-card::-webkit-scrollbar { width: 6px; }
+        .bible-card::-webkit-scrollbar-thumb { background: #D4AF37; }
+
+        /* Gold Gradient Buttons */
+        .btn-gold {
+            background: linear-gradient(135deg, #D4AF37 0%, #B8860B 50%, #996515 100%);
+            color: #050505; font-weight: 900; text-transform: uppercase; letter-spacing: 0.2em;
+            border: 1px solid #FFD700; box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+            transition: all 0.3s ease; border-radius: 2px; padding: 16px 32px; cursor: pointer;
+            font-family: 'Inter', sans-serif;
+        }
+        .btn-gold:hover { filter: brightness(1.2); transform: translateY(-2px); box-shadow: 0 8px 25px rgba(212, 175, 55, 0.5); }
+        .btn-gold:disabled { filter: grayscale(1); opacity: 0.5; pointer-events: none; }
+
+        .vocab-trigger { color: #D4AF37; border-bottom: 1px dashed #D4AF37; cursor: pointer; font-weight: 600; transition: all 0.2s; }
+        .vocab-trigger:hover { color: #FFF; border-bottom-style: solid; text-shadow: 0 0 10px rgba(212, 175, 55, 0.8); }
+
+        /* Holy Relics Specific Styles */
+        .relic-table { border-bottom: 4px solid #1a110a; box-shadow: 0 20px 20px -20px rgba(212,175,55,0.2); display: flex; justify-content: center; gap: 3rem; padding-bottom: 2rem; align-items: flex-end; height: 150px; }
+        .relic-item { cursor: pointer; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); filter: drop-shadow(0 10px 10px rgba(0,0,0,0.8)); opacity: 0.7; }
+        .relic-item:hover, .relic-item.active { transform: scale(1.2) translateY(-15px); filter: drop-shadow(0 0 30px rgba(212,175,55,0.8)); opacity: 1; }
+        .parchment-modal { background: #e8dcc4; background-image: url("https://www.transparenttextures.com/patterns/old-wall.png"); color: #3e2723; border-radius: 4px; padding: 2rem; box-shadow: 0 30px 60px rgba(0,0,0,0.9), inset 0 0 50px rgba(139,69,19,0.2); position: relative; overflow: hidden; border: 1px solid #c8b99c; animation: fadeIn 0.4s ease-out; }
+
+        /* The Altar Fire */
+        .altar-fire { width: 100%; height: 140px; background: radial-gradient(ellipse at bottom, #9B2C2C 0%, #1a0f0f 70%); border-bottom: 4px solid #D4AF37; position: relative; overflow: hidden; display: flex; justify-content: center; align-items: flex-end; padding-bottom: 20px; box-shadow: inset 0 -20px 40px rgba(212,175,55,0.1); }
+        .spark { position: absolute; bottom: 0; width: 4px; height: 4px; background: #D4AF37; border-radius: 50%; animation: rise 2s infinite ease-in; opacity: 0; box-shadow: 0 0 10px #D4AF37; }
+        @keyframes rise { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-150px) scale(0); opacity: 0; } }
+        .burden-card { background: #111; border: 1px solid #444; padding: 20px 30px; cursor: pointer; transition: all 0.3s; font-family: 'Playfair Display', serif; font-size: 1.5rem; text-align: center; box-shadow: inset 0 0 20px rgba(0,0,0,0.8); border-radius: 4px; }
+        .burden-card:hover { border-color: #9B2C2C; box-shadow: 0 0 20px rgba(155, 44, 44, 0.6), inset 0 0 20px rgba(0,0,0,0.8); transform: translateY(-5px); }
+
+        /* Panels */
+        .side-panel { position: fixed; top: 0; right: -100%; width: 100%; max-width: 500px; height: 100vh; background: rgba(10, 10, 10, 0.98); backdrop-filter: blur(20px); border-left: 2px solid #D4AF37; z-index: 100; transition: right 0.5s cubic-bezier(0.16, 1, 0.3, 1); display: flex; flex-direction: column; box-shadow: -20px 0 50px rgba(0,0,0,0.9); }
+        .side-panel.open { right: 0; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fadeIn { animation: fadeIn 0.7s ease-out forwards; }
+        
+        @keyframes slideDownFade { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-slideDownFade { animation: slideDownFade 0.4s ease-out forwards; }
+
+        /* 99 and 1 Animations */
+        .sheep-dot { position: absolute; width: 6px; height: 6px; background: rgba(255,255,255,0.8); border-radius: 50%; box-shadow: 0 0 8px rgba(255,255,255,0.6); animation: twinkle 3s infinite alternate; }
+        @keyframes twinkle { 0% { opacity: 0.4; } 100% { opacity: 1; } }
+        .lost-sheep { position: absolute; bottom: 15%; left: 50%; width: 8px; height: 8px; background: #551111; border-radius: 50%; transform: translateX(-50%); transition: all 2s; box-shadow: 0 0 10px #ff0000; }
+        .shepherd-light { position: absolute; top: 20%; left: 50%; width: 15px; height: 15px; background: #D4AF37; border-radius: 50%; transform: translateX(-50%); box-shadow: 0 0 30px 10px rgba(212,175,55,0.8); transition: top 3s ease-in-out; z-index: 10; cursor: pointer; }
+        .light-descend { top: calc(85% - 20px); }
+        .sheep-found { background: #D4AF37; box-shadow: 0 0 20px #D4AF37; }
+
+        /* Blurred Scroll */
+        .blurred-text { filter: blur(6px); transition: filter 2s ease; user-select: none; }
+        .clear-text { filter: blur(0px); text-shadow: 0 0 15px rgba(212,175,55,0.5); }
+    </style>
+</head>
+<body class="text-lg md:text-xl selection:bg-[#D4AF37]/30 selection:text-white">
+
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        // --- GLOBAL TRANSLATION HELPER ---
+        const t = (obj, lang) => {
+            if (!obj) return '';
+            if (typeof obj === 'string') return obj;
+            return obj[lang] || obj['en'] || '';
+        };
+
+        // --- ASSETS & CONSTANTS ---
+        const YOUTUBE_ID = "R8wyWncb3eM"; 
+        const BG_COVER = "https://eternitynews.com.au/wp-content/uploads/2022/10/Untitled-design.jpg"; 
+
+        // --- REUSABLE UI ---
+        const Icon = ({ name, size = 24, className = "", style={} }) => (
+            <i className={`fa-solid fa-${name} ${className}`} style={{ fontSize: size, ...style }}></i>
+        );
+
+        const ClassicDivider = () => (
+            <div className="flex items-center justify-center w-full my-6 opacity-60">
+                <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent to-[#D4AF37]"></div>
+                <div className="mx-4 w-2 h-2 rotate-45 bg-[#D4AF37]"></div>
+                <div className="h-[1px] flex-1 bg-gradient-to-l from-transparent to-[#D4AF37]"></div>
+            </div>
+        );
+
+        // ==========================================
+        // 🛠️ TEACHER TOOLSET & FULLSCREEN
+        // ==========================================
+        const TeacherTools = ({ isFs, toggleFs, lang, toggleLang }) => {
+            const [whiteboardOpen, setWhiteboardOpen] = useState(false);
+            const [dictOpen, setDictOpen] = useState(false);
+
+            useEffect(() => {
+                window.openDictionary = (word, def, ex, prompt) => {
+                    document.getElementById('dict-word').innerText = word;
+                    document.getElementById('dict-def').innerText = def;
+                    document.getElementById('dict-ex').innerText = `"${ex}"`;
+                    document.getElementById('dict-prompt').innerText = prompt;
+                    setDictOpen(true);
+                };
+                window.closeDictionary = () => setDictOpen(false);
+            }, []);
+
+            return (
+                <React.Fragment>
+                <div className="fixed top-8 right-12 z-[60] flex items-center gap-4">
+                    <button onClick={toggleLang} className="h-12 px-4 bg-[#0a0a0a] border border-[#D4AF37]/50 hover:bg-[#1a1a1a] transition-all shadow-2xl flex items-center justify-center gap-2 rounded text-[#D4AF37] font-bold text-xs uppercase tracking-widest" title="Translate Text">
+                        <Icon name="globe" size={16} /> {lang === 'en' ? 'PT' : 'EN'}
+                    </button>
+                    <button onClick={() => setWhiteboardOpen(!whiteboardOpen)} className="w-12 h-12 bg-[#0a0a0a] border border-[#D4AF37]/50 hover:bg-[#1a1a1a] transition-all shadow-2xl flex items-center justify-center" title="Theological Notes">
+                        <Icon name="feather" size={20} className="text-[#D4AF37]" />
+                    </button>
+                    <button onClick={toggleFs} className="w-12 h-12 bg-[#0a0a0a] border border-[#D4AF37]/50 hover:bg-[#1a1a1a] transition-all shadow-2xl flex items-center justify-center" title="Toggle Fullscreen">
+                        <Icon name={isFs ? "compress" : "expand"} size={20} className="text-[#D4AF37]" />
+                    </button>
+                </div>
+
+                {/* Scribe's Journal Panel */}
+                <div className={`side-panel p-8 ${whiteboardOpen ? 'open' : ''}`}>
+                    <div className="flex justify-between items-center mb-8 pb-6 border-b border-zinc-800">
+                        <h3 className="font-bold text-2xl text-sacred-gold uppercase tracking-widest font-serif-classic italic flex items-center gap-3">
+                            <Icon name="feather" size={24}/> The Scribe's Journal
+                        </h3>
+                        <button onClick={() => setWhiteboardOpen(false)} className="text-zinc-500 hover:text-white transition-colors">
+                            <Icon name="xmark" size={28}/>
+                        </button>
+                    </div>
+                    <div className="flex gap-4 mb-6">
+                        <button onClick={() => {
+                            const text = document.getElementById('journal-textarea').value;
+                            if(!text.trim()) return alert("Your journal is empty.");
+                            const blob = new Blob([text], { type: 'text/plain' });
+                            const anchor = document.createElement('a'); 
+                            anchor.download = `Wolfaith_Journal.txt`;
+                            anchor.href = window.URL.createObjectURL(blob); 
+                            anchor.click();
+                        }} className="flex-1 bg-sacred-gold/10 hover:bg-sacred-gold/20 text-sacred-gold border border-sacred-gold/50 py-3 rounded text-sm font-bold tracking-widest uppercase transition-colors">
+                            Save Text
+                        </button>
+                        <button onClick={() => { if(confirm("Erase all?")) document.getElementById('journal-textarea').value=''; }} className="flex-1 bg-burgundy/10 hover:bg-burgundy/20 text-red-400 border border-burgundy/50 py-3 rounded text-sm font-bold tracking-widest uppercase transition-colors">
+                            Erase
+                        </button>
+                    </div>
+                    <textarea id="journal-textarea" className="flex-1 w-full bg-black/40 text-zinc-300 resize-none outline-none border border-zinc-800 p-6 rounded focus:border-sacred-gold transition-all font-serif-classic italic text-xl leading-relaxed shadow-inner" placeholder="Write your reflection here..."></textarea>
+                </div>
+
+                {/* Dictionary Panel */}
+                <div className={`side-panel p-8 ${dictOpen ? 'open' : ''}`}>
+                    <div className="flex justify-between items-center mb-8 pb-6 border-b border-zinc-800">
+                        <h3 className="font-bold text-2xl text-sacred-gold uppercase tracking-widest font-serif-classic italic flex items-center gap-3">
+                            <Icon name="book-open" size={24}/> Scholar's Lexicon
+                        </h3>
+                        <button onClick={() => setDictOpen(false)} className="text-zinc-500 hover:text-white transition-colors">
+                            <Icon name="xmark" size={28}/>
+                        </button>
+                    </div>
+                    <div className="space-y-6 flex-1 overflow-y-auto pr-4">
+                        <div>
+                            <p id="dict-word" className="font-serif-classic italic text-4xl text-sacred-gold mb-2 tracking-widest drop-shadow-md">Word</p>
+                            <p id="dict-def" className="text-zinc-300 text-lg leading-relaxed font-sans-ui font-light">Definition goes here.</p>
+                        </div>
+                        <div className="bg-[#1a0f0f]/80 p-6 rounded border-l-2 border-[#722F37]">
+                            <p className="text-xs text-zinc-500 uppercase tracking-widest mb-2 font-bold font-sans-ui">Context</p>
+                            <p id="dict-ex" className="text-zinc-200 italic text-base font-serif-classic">"Example text."</p>
+                        </div>
+                        <div className="bg-black/50 p-6 border border-sacred-gold/30 rounded">
+                            <p id="dict-prompt" className="text-sacred-gold text-sm font-bold leading-relaxed font-sans-ui tracking-wide">Prompt text.</p>
+                        </div>
+                    </div>
+                </div>
+                </React.Fragment>
+            );
+        };
+
+        // --- SLIDE COMPONENTS ---
+        const CoverSlide = ({ nextSlide }) => (
+            <div className="relative w-full h-full flex flex-col items-center justify-center text-center p-8 z-10 animate-fadeIn">
+                <div className="z-10 flex flex-col items-center justify-center mt-10 w-full max-w-5xl mx-auto">
+                    <Icon name="cross" size={50} className="text-[#D4AF37] mb-6 drop-shadow-[0_0_20px_rgba(212,175,55,0.8)]" />
+                    <p className="text-[#D4AF37] font-sans-ui font-bold tracking-[0.5em] text-xs uppercase mb-6 drop-shadow-md">WOLFAITH Engine</p>
+                    <h1 className="text-6xl md:text-8xl font-serif-classic text-white mb-4 drop-shadow-[0_10px_20px_rgba(0,0,0,0.8)] italic tracking-tight">The Chosen</h1>
+                    <h2 className="text-2xl md:text-4xl text-zinc-300 font-sans-ui font-black mb-10 tracking-[0.2em] uppercase">The Lost Sheep</h2>
+                    
+                    <ClassicDivider />
+                    
+                    <div className="flex flex-wrap items-center justify-center gap-6 text-xs font-sans-ui font-bold mb-12 tracking-widest text-zinc-400 uppercase bg-[#111] p-4 border border-[#D4AF37]/30 rounded-md shadow-inner">
+                        <span>A2 Level</span>
+                        <div className="w-1 h-1 bg-[#D4AF37] rotate-45"></div>
+                        <span>Past Simple</span>
+                        <div className="w-1 h-1 bg-[#D4AF37] rotate-45"></div>
+                        <span>Imperatives</span>
+                    </div>
+
+                    <button onClick={nextSlide} className="btn-gold px-12 py-5 shadow-[0_10px_30px_rgba(212,175,55,0.3)] text-sm"><Icon name="play" className="mr-2" /> Enter the Scene</button>
+                </div>
+            </div>
+        );
+
+        const TeacherGuideSlide = ({ startLesson, lang }) => (
+            <div className="min-h-screen flex items-center justify-center p-8 relative overflow-hidden w-full z-10">
+                <div className="max-w-4xl w-full z-10 flex flex-col items-center text-center animate-fadeIn">
+                    <h1 className="text-[#D4AF37] font-serif-classic text-4xl italic mb-2 drop-shadow-md">Wolfaith Engine</h1>
+                    <p className="text-zinc-400 font-sans-ui text-xs font-bold tracking-[0.3em] uppercase mb-10">Teacher's Dashboard</p>
+                    
+                    <div className="bible-card p-10 w-full mb-10 text-left border-[#D4AF37]/30">
+                        <div className="flex items-center gap-4 mb-6 border-b-2 border-[#D4AF37]/30 pb-4">
+                            <Icon name="scroll" size={40} className="text-[#D4AF37]" />
+                            <h2 className="text-2xl font-serif-classic text-white">Lesson Objective: The Lost Sheep</h2>
+                        </div>
+                        <p className="text-zinc-300 text-lg leading-relaxed font-sans-ui font-light mb-6">
+                            {lang === 'en' ? "An A2 Level immersive lesson. We explore the contrast between the 'dark past' (Past Simple) and 'divine commands' (Imperatives) using the parable of the 99 and the 1." : "Uma aula imersiva de nível A2. Exploramos o contraste entre o 'passado sombrio' (Past Simple) e os comandos divinos (Imperativos) usando a parábola das 99 e a 1."}
+                        </p>
+                        <div className="bg-emerald-900/20 border-l-2 border-emerald-900 p-4">
+                            <p className="text-emerald-400 text-xs font-bold uppercase tracking-widest mb-1">A2 Conversational</p>
+                            <p className="text-sm text-zinc-400 font-sans-ui">
+                                {lang === 'en' ? "Heavy focus on Speaking Starters to help students express complex moral dilemmas simply." : "Forte foco em Iniciadores de Fala para ajudar os alunos a expressar dilemas morais complexos de forma simples."}
+                            </p>
+                        </div>
+                    </div>
+
+                    <button onClick={startLesson} className="btn-gold px-12 py-4 text-sm"><Icon name="play" className="mr-2"/> Begin Experience</button>
+                </div>
+            </div>
+        );
+
+        // --- NOVO COMPONENTE: The 99 and 1 (Interactive Compass) ---
+        const NinetyNineSlide = ({ lang, nextAction }) => {
+            const [found, setFound] = useState(false);
+            
+            // Generate 99 random positions for the safe sheep
+            const safeSheep = useRef(Array.from({length: 99}).map(() => ({
+                top: `${10 + Math.random() * 20}%`, 
+                left: `${10 + Math.random() * 80}%`,
+                delay: `${Math.random() * 2}s`
+            })));
+
+            const handleSearch = () => {
+                setFound(true);
+                setTimeout(nextAction, 4000);
+            };
+
+            return (
+                <div className="w-full h-full flex flex-col items-center justify-center p-8 animate-fadeIn text-center relative z-10 overflow-hidden bg-gradient-to-b from-[#050b14] via-[#050505] to-[#000000] border-2 border-zinc-800 rounded-xl shadow-2xl my-10 max-w-5xl mx-auto min-h-[600px]">
+                    
+                    <div className="absolute top-8 w-full z-20 pointer-events-none">
+                        <h2 className="text-3xl font-sans-ui font-black mb-2 text-[#D4AF37] uppercase tracking-[0.2em] drop-shadow-md">
+                            {lang === 'en' ? "The 99 and the 1" : "As 99 e a 1"}
+                        </h2>
+                        <p className="text-xl text-zinc-300 font-serif-classic italic">
+                            {lang === 'en' ? "The shepherd leaves the 99 safe on the mountain..." : "O pastor deixa as 99 seguras na montanha..."}
+                        </p>
+                    </div>
+
+                    {/* The 99 Safe Sheep */}
+                    {safeSheep.current.map((pos, i) => (
+                        <div key={i} className="sheep-dot" style={{ top: pos.top, left: pos.left, animationDelay: pos.delay }}></div>
+                    ))}
+
+                    {/* The Shepherd Light */}
+                    <div className={`shepherd-light flex items-center justify-center ${found ? 'light-descend' : ''}`} onClick={handleSearch} title={lang === 'en' ? "Search for the lost" : "Procurar a perdida"}>
+                        {!found && <Icon name="hand-holding-hand" size={10} className="text-white opacity-80" />}
+                    </div>
+
+                    {/* The Lost 1 */}
+                    <div className={`lost-sheep ${found ? 'sheep-found' : ''}`}></div>
+
+                    {/* Action Area */}
+                    <div className="absolute bottom-8 w-full z-20 flex flex-col items-center">
+                        {!found ? (
+                            <button onClick={handleSearch} className="btn-gold px-8 py-3 text-sm animate-pulse shadow-[0_0_20px_rgba(212,175,55,0.4)]">
+                                <Icon name="magnifying-glass" className="mr-2" /> 
+                                {lang === 'en' ? "Search the Darkness" : "Procurar na Escuridão"}
+                            </button>
+                        ) : (
+                            <p className="text-2xl font-serif-classic italic text-emerald-400 drop-shadow-lg animate-fadeIn">
+                                "{lang === 'en' ? "You are found." : "Foste encontrado."}"
+                            </p>
+                        )}
+                    </div>
+                </div>
+            );
+        };
+
+        const DiscussionSlide = ({ title, question, hint, lang }) => (
+            <div className="flex flex-col items-center justify-center h-full w-full max-w-4xl mx-auto p-8 animate-fadeIn z-10 text-center">
+                <Icon name="comments" size={40} className="text-[#D4AF37] mb-8 opacity-80" />
+                <h2 className="text-2xl font-sans-ui font-bold mb-6 text-[#D4AF37] uppercase tracking-widest">{t(title, lang)}</h2>
+                <p className="text-3xl md:text-4xl text-white font-serif-classic italic leading-relaxed mb-12">{t(question, lang)}</p>
+                <div className="bg-[#1a0f0f]/80 border border-[#722F37]/50 p-6 w-full max-w-2xl mx-auto text-left">
+                    <p className="text-[#D4AF37] font-bold uppercase tracking-widest text-[10px] mb-4 flex items-center gap-2">
+                        <Icon name="lightbulb" size={14}/> {lang === 'en' ? 'Speaking Starters (A2)' : 'Para Começar a Falar (A2)'}
+                    </p>
+                    <div className="space-y-3">
+                        {t(hint, lang).split('/').map((h, i) => (
+                            <p key={i} className="text-lg text-zinc-300 font-sans-ui font-light italic border-l-2 border-zinc-700 pl-3">
+                                "{h.trim()}"
+                            </p>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        );
+
+        const HolyRelics = ({ lang }) => {
+            const [activeRelic, setActiveRelic] = useState(null);
+
+            const relics = [
+                { 
+                    id: 'sheep', icon: 'sheep', color: '#D4AF37', 
+                    title: { en: 'The Lost Sheep', pt: 'A Ovelha Perdida' }, 
+                    meaning: { en: 'The one that went astray.', pt: 'Aquela que se desgarrou.' }, 
+                    secret: { en: "Astray means to wander away from the safe path. Jesus searches for the one who went astray.", pt: "Desgarrar significa afastar-se do caminho seguro. Jesus procura aquele que se afastou." } 
+                },
+                { 
+                    id: 'staff', icon: 'staff-snake', color: '#9B2C2C', 
+                    title: { en: 'Shepherd\'s Staff', pt: 'Cajado do Pastor' }, 
+                    meaning: { en: 'Protection and rescue.', pt: 'Proteção e resgate.' }, 
+                    secret: { en: "The shepherd uses the staff to pull the sheep out of holes. He leaves the 99 safe ones to rescue the 1.", pt: "O pastor usa o cajado para puxar a ovelha dos buracos. Ele deixa as 99 seguras para resgatar a 1." } 
+                },
+                { 
+                    id: 'scroll', icon: 'scroll', color: '#888', 
+                    title: { en: 'The Torah', pt: 'A Torá' }, 
+                    meaning: { en: 'The Word of God.', pt: 'A Palavra de Deus.' }, 
+                    secret: { en: "The thief cannot read. Jesus tells him to listen to the Word and let it change his heart.", pt: "O ladrão não sabe ler. Jesus diz-lhe para ouvir a Palavra e deixar que ela mude o seu coração." } 
+                }
+            ];
+
+            const active = relics.find(r => r.id === activeRelic);
+
+            return (
+                <div className="w-full max-w-4xl text-center animate-fadeIn z-10 mx-auto pt-10">
+                    <h2 className="text-2xl font-sans-ui font-black mb-4 text-[#D4AF37] uppercase tracking-[0.3em] drop-shadow-md">
+                        {lang === 'en' ? "The Holy Relics" : "As Relíquias Sagradas"}
+                    </h2>
+                    <p className="text-zinc-400 font-serif-classic italic mb-12">
+                        {lang === 'en' ? "Touch an artifact to uncover its meaning." : "Toque num artefacto para descobrir o seu significado."}
+                    </p>
+
+                    <div className="flex justify-center gap-12 mb-8 border-b-2 border-zinc-800 pb-8">
+                        {relics.map(r => (
+                            <div key={r.id} onClick={() => setActiveRelic(r.id)} 
+                                 className={`relic-item ${activeRelic === r.id ? 'active' : ''}`}
+                                 style={{ color: r.color }}>
+                                <Icon name={r.icon} size={60} />
+                            </div>
+                        ))}
+                    </div>
+
+                    {active && (
+                        <div className="parchment-modal text-left flex flex-col md:flex-row gap-6 items-center w-full animate-slideDownFade">
+                            <div className="flex-1">
+                                <p className="font-sans-ui font-black text-xs uppercase tracking-widest text-[#8B6508] mb-2">
+                                    {lang === 'en' ? 'A2 Dictionary' : 'Dicionário A2'}
+                                </p>
+                                <h3 className="font-serif-classic text-4xl font-bold mb-2 text-[#3e2723]">
+                                    {t(active.title, lang)}
+                                </h3>
+                                <p className="font-sans-ui text-xl font-bold text-[#5c3c08] mt-4">
+                                    "{t(active.meaning, lang)}"
+                                </p>
+                            </div>
+                            <div className="flex-1 bg-[#fff8e7] p-6 rounded border border-[#d8cbb0] shadow-inner">
+                                <p className="font-sans-ui font-black text-[10px] uppercase tracking-widest text-zinc-500 mb-2 flex items-center gap-2">
+                                    <Icon name="feather" size={12}/> {lang === 'en' ? "The Scribe's Secret" : "O Segredo do Escriba"}
+                                </p>
+                                <p className="font-serif-classic italic text-lg leading-relaxed text-[#4a3622]">
+                                    {t(active.secret, lang)}
+                                </p>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        const IlluminatedText = ({ lang }) => {
+            const [isBookOpen, setIsBookOpen] = useState(false);
+            const [openKey, setOpenKey] = useState(null);
+
+            const verses = {
+                en: "The shepherd leaves the {ninetynine} on the mountain to search for the {one} that went {astray}.",
+                pt: "O pastor deixa as {ninetynine} na montanha para procurar a {one} que se {astray}."
+            };
+            
+            const glossary = {
+                "ninetynine": { 
+                    word: { en: "99", pt: "99" },
+                    icon: "users", 
+                    title: { en: "The Ninety-Nine", pt: "As Noventa e Nove" },
+                    en: "The ones who are safe.", pt: "As que estão seguras.", 
+                    sketch: { en: "Those who already belong to the flock and don't need rescuing right now.", pt: "Aquelas que já pertencem ao rebanho e não precisam de resgate agora." } 
+                },
+                "one": { 
+                    word: { en: "one", pt: "uma" },
+                    icon: "person-walking-arrow-right", 
+                    title: { en: "The One", pt: "A Uma" },
+                    en: "The specific soul that is lost.", pt: "A alma específica que está perdida.", 
+                    sketch: { en: "God's love is so personal that He focuses entirely on the single person in danger.", pt: "O amor de Deus é tão pessoal que Ele foca totalmente na única pessoa em perigo." } 
+                },
+                "astray": { 
+                    word: { en: "astray", pt: "desgarrou" },
+                    icon: "route", 
+                    title: { en: "Astray", pt: "Desgarrada" },
+                    en: "To wander off the right path.", pt: "Vagar para fora do caminho certo.", 
+                    sketch: { en: "Grammar: 'Go astray'. It implies getting lost, often due to bad choices or confusion.", pt: "Gramática: 'Go astray'. Implica perder-se, muitas vezes devido a más escolhas ou confusão." } 
+                }
+            };
+
+            const renderVerse = () => {
+                let res = verses[lang];
+                Object.keys(glossary).forEach(key => {
+                    const displayWord = glossary[key].word[lang];
+                    res = res.replace(`{${key}}`, `<span class="vocab-trigger" data-key="${key}">${displayWord}</span>`);
+                });
+                return <div dangerouslySetInnerHTML={{ __html: res }} onClick={(e) => {
+                    if(e.target.classList.contains('vocab-trigger')) {
+                        const key = e.target.dataset.key;
+                        setOpenKey(openKey === key ? null : key);
+                    }
+                }} />;
+            };
+
+            return (
+                <div className="w-full flex justify-center animate-fadeIn z-10 mx-auto">
+                    {!isBookOpen ? (
+                        <div onClick={() => setIsBookOpen(true)} className="flex flex-col items-center justify-center cursor-pointer group mt-10">
+                            <div className="relative w-56 h-80 bg-[#1f1209] rounded-r-xl border-l-[12px] border-[#0a0502] shadow-[25px_25px_40px_rgba(0,0,0,0.9),inset_-5px_0_20px_rgba(0,0,0,0.8)] flex flex-col items-center justify-center transition-all duration-700 group-hover:-translate-y-6 group-hover:shadow-[0_40px_60px_rgba(212,175,55,0.25)]">
+                                <div className="absolute right-0 top-2 bottom-2 w-3 bg-gradient-to-b from-[#D4AF37] via-[#FFF1C5] to-[#8B6508] rounded-r opacity-70"></div>
+                                <div className="absolute inset-2 border-2 border-[#D4AF37]/30 rounded-r-lg pointer-events-none"></div>
+                                <div className="absolute inset-4 border border-[#D4AF37]/10 rounded-r-md pointer-events-none"></div>
+                                
+                                <Icon name="cross" size={50} className="text-[#D4AF37] mb-8 drop-shadow-[0_0_15px_rgba(212,175,55,0.6)]" />
+                                <h3 className="font-serif-classic text-[#D4AF37] text-2xl uppercase tracking-[0.3em] font-black text-center px-4 drop-shadow-md">
+                                    {lang === 'en' ? "Holy Bible" : "Bíblia Sagrada"}
+                                </h3>
+                                
+                                <div className="absolute top-3 left-3 w-6 h-6 border-t-2 border-l-2 border-[#D4AF37]/60"></div>
+                                <div className="absolute top-3 right-5 w-6 h-6 border-t-2 border-r-2 border-[#D4AF37]/60"></div>
+                                <div className="absolute bottom-3 left-3 w-6 h-6 border-b-2 border-l-2 border-[#D4AF37]/60"></div>
+                                <div className="absolute bottom-3 right-5 w-6 h-6 border-b-2 border-r-2 border-[#D4AF37]/60"></div>
+                            </div>
+                            <p className="mt-12 text-[#D4AF37] font-bold uppercase tracking-widest text-sm animate-pulse drop-shadow-[0_0_10px_rgba(212,175,55,0.5)] bg-black/50 px-6 py-2 rounded-full border border-[#D4AF37]/30">
+                                {lang === 'en' ? "Tap to open the scriptures" : "Toque para abrir as escrituras"}
+                            </p>
+                        </div>
+                    ) : (
+                        <div className="bible-card text-center animate-fadeIn w-full max-w-4xl mx-auto">
+                            <p className="text-[#D4AF37] font-sans-ui font-bold tracking-[0.3em] text-[10px] uppercase mb-4">Illuminated Manuscript</p>
+                            <p className="text-zinc-400 font-sans-ui text-xs mb-8 uppercase tracking-widest">
+                                {lang === 'en' ? "Tap the glowing text to decode." : "Toque no texto brilhante para descodificar."}
+                            </p>
+                            
+                            <div className="text-3xl md:text-5xl font-serif-classic italic leading-relaxed text-zinc-200 mb-6 p-8 border border-[#D4AF37]/20 bg-black/60 shadow-inner rounded cursor-default">
+                                {renderVerse()}
+                            </div>
+
+                            {openKey && (
+                                <div className="bg-[#d4c4a8] bg-[url('https://www.transparenttextures.com/patterns/cream-paper.png')] border-2 border-[#a89473] rounded p-6 mt-6 shadow-[inset_0_0_30px_rgba(139,69,19,0.3),0_15px_30px_rgba(0,0,0,0.6)] text-[#4a3622] relative overflow-hidden flex gap-6 items-center animate-slideDownFade text-left">
+                                    <div><Icon name={glossary[openKey].icon} size={40} className="text-[#8B6508]" /></div>
+                                    <div className="z-10 relative">
+                                        <p className="font-sans-ui font-black text-sm uppercase tracking-widest text-[#5c3c08] mb-1">{t(glossary[openKey].title, lang)}</p>
+                                        <p className="font-serif-classic text-2xl font-bold text-[#3e2723] mb-3">"{t(glossary[openKey], lang)}"</p>
+                                        <p className="font-serif-classic italic text-lg leading-relaxed text-[#6d4c41]">{t(glossary[openKey].sketch, lang)}</p>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        const VideoSlide = ({ title, mission, lang }) => {
+            const videoSrc = `https://www.youtube.com/embed/${YOUTUBE_ID}?rel=0&modestbranding=1&showinfo=0`;
+            return (
+                <div className="flex flex-col items-center justify-center h-full w-full max-w-4xl mx-auto p-6 animate-fadeIn text-center z-10">
+                    <h2 className="text-3xl font-serif-classic italic text-[#D4AF37] mb-2">{t(title, lang)}</h2>
+                    {mission && <p className="text-sm text-zinc-400 font-sans-ui font-bold tracking-widest uppercase mb-8">{t(mission, lang)}</p>}
+                    
+                    <div className="w-full aspect-video bg-black border border-[#D4AF37]/30 shadow-[0_0_40px_rgba(0,0,0,0.8)] p-2">
+                        <iframe className="w-full h-full" src={videoSrc} frameBorder="0" allow="autoplay; encrypted-media" allowFullScreen></iframe>
+                    </div>
+                </div>
+            );
+        };
+
+        const ScriptSlide = ({ speaker, quote, analysis, grammarNote, lang }) => (
+            <div className="flex flex-col items-center justify-center h-full w-full max-w-5xl mx-auto p-6 animate-fadeIn z-10">
+                <p className="text-zinc-500 font-sans-ui font-bold tracking-[0.3em] text-[10px] uppercase mb-8">Text Analysis</p>
+                <div className="w-full flex flex-col md:flex-row gap-8 items-stretch">
+                    <div className="flex-[1.5] bible-card p-10 flex flex-col justify-center border-l-4 border-l-[#D4AF37]">
+                        <p className="text-xs text-[#D4AF37] font-bold uppercase tracking-widest mb-4">{t(speaker, lang)}</p>
+                        <p className="text-3xl md:text-4xl text-white font-serif-classic italic leading-relaxed">"{t(quote, lang)}"</p>
+                    </div>
+                    <div className="flex-1 flex flex-col gap-4">
+                        <div className="bg-[#0a0a0a]/80 p-6 border border-zinc-800">
+                            <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mb-2">{lang === 'en' ? 'Meaning' : 'Significado'}</p>
+                            <p className="text-base text-zinc-300 font-sans-ui leading-relaxed">{t(analysis, lang)}</p>
+                        </div>
+                        <div className="bg-[#1a0f0f]/80 p-6 border border-[#722F37]/30">
+                            <p className="text-[10px] text-[#D4AF37] font-bold uppercase tracking-widest mb-2">{lang === 'en' ? 'Grammar Rule' : 'Regra Gramatical'}</p>
+                            <p className="text-base text-white font-sans-ui leading-relaxed">{t(grammarNote, lang)}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+
+        const QuizSlide = ({ question, options, answerIndex, explanation, nextAction, lang }) => {
+            const [selected, setSelected] = useState(null);
+            return (
+                <div className="flex flex-col items-center justify-center h-full w-full max-w-4xl mx-auto p-8 animate-fadeIn text-center z-10">
+                    <p className="text-[#D4AF37] font-sans-ui font-bold tracking-[0.3em] text-[10px] uppercase mb-8">{lang === 'en' ? 'Observation Check' : 'Verificação'}</p>
+                    <h2 className="text-3xl md:text-4xl font-serif-classic italic text-white mb-10">{t(question, lang)}</h2>
+                    
+                    <div className="w-full flex flex-col gap-4">
+                        {options.map((opt, i) => (
+                            <button key={i} onClick={() => {
+                                setSelected(i);
+                                if(i === answerIndex) setTimeout(nextAction, 2500);
+                            }} className={`p-6 text-left border transition-all 
+                                ${selected === i && i === answerIndex ? 'bg-emerald-900/30 border-emerald-500' : 
+                                  selected === i && i !== answerIndex ? 'bg-red-900/30 border-red-500' : 
+                                  'bg-black/50 border-zinc-700 hover:border-[#D4AF37]'}`}>
+                                <p className="text-xl text-white font-sans-ui">{t(opt, lang)}</p>
+                            </button>
+                        ))}
+                    </div>
+
+                    {selected !== null && (
+                        <div className="mt-8">
+                            {selected === answerIndex ? 
+                                <p className="text-emerald-400 font-bold text-lg animate-fadeIn">{t(explanation, lang)}</p> : 
+                                <p className="text-red-400 font-bold text-lg animate-fadeIn">{lang === 'en' ? "Incorrect. Try again." : "Incorreto. Tente de novo."}</p>
+                            }
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        const GrammarPastVsImpSlide = ({ lang }) => (
+            <div className="flex flex-col items-center justify-center h-full p-8 w-full max-w-5xl mx-auto animate-fadeIn text-center z-10">
+                <h2 className="text-4xl font-sans-ui font-black mb-4 text-white uppercase tracking-widest">Past Simple vs Imperative</h2>
+                <p className="text-zinc-400 mb-12 font-serif-classic italic text-xl">{lang==='en'?'The dark past vs the new command.':'O passado escuro vs o novo comando.'}</p>
+
+                <div className="flex flex-col md:flex-row gap-8 text-left w-full">
+                    <div className="flex-1 bg-[#1a0f0f]/80 p-8 border border-red-900/50 rounded shadow-lg">
+                        <p className="text-red-500 text-2xl font-bold mb-4 font-sans-ui border-b border-red-900/50 pb-2">PAST SIMPLE</p>
+                        <p className="text-zinc-300 font-sans-ui mb-4">{lang === 'en' ? 'Used for finished actions in the past. Often holds regrets.' : 'Usado para ações terminadas no passado. Muitas vezes guarda arrependimentos.'}</p>
+                        <p className="text-xl text-white font-serif-classic italic border-l-2 border-red-500 pl-4 mb-2">"I <strong className="text-red-500">committed</strong> a crime."</p>
+                        <p className="text-xl text-white font-serif-classic italic border-l-2 border-red-500 pl-4">"You <strong className="text-red-500">came</strong> all the way out here."</p>
+                    </div>
+                    <div className="flex-1 bg-[#051a10]/80 p-8 border border-emerald-900/50 rounded shadow-lg">
+                        <p className="text-emerald-500 text-2xl font-bold mb-4 font-sans-ui border-b border-emerald-900/50 pb-2">IMPERATIVE</p>
+                        <p className="text-zinc-300 font-sans-ui mb-4">{lang === 'en' ? 'A direct command. Used to give instructions or direction for the future.' : 'Um comando direto. Usado para dar instruções ou direção para o futuro.'}</p>
+                        <p className="text-xl text-white font-serif-classic italic border-l-2 border-emerald-500 pl-4 mb-2">"<strong className="text-emerald-500">Believe</strong> my words."</p>
+                        <p className="text-xl text-white font-serif-classic italic border-l-2 border-emerald-500 pl-4">"<strong className="text-emerald-500">Return</strong> to synagogue."</p>
+                    </div>
+                </div>
+            </div>
+        );
+
+        // --- NOVO COMPONENTE: The Confession Altar (Past -> Imperative) ---
+        const ConfessionAltarSlide = ({ nextStep, lang }) => {
+            const [stage, setStage] = useState(0); 
+            
+            const handleBurn = () => {
+                setStage(1);
+                setTimeout(() => {
+                    setStage(2);
+                    setTimeout(nextStep, 5000); 
+                }, 2500);
+            };
+
+            return (
+                <div className="w-full max-w-4xl mx-auto flex flex-col items-center justify-center animate-fadeIn text-center p-4 z-10">
+                    <Icon name="fire-flame-curved" size={50} className="text-[#D4AF37] mb-6 drop-shadow-[0_0_15px_rgba(212,175,55,0.8)]" />
+                    <h2 className="text-4xl font-sans-ui font-black mb-2 text-white uppercase tracking-widest">The Altar</h2>
+                    <p className="text-zinc-400 font-serif-classic italic mb-10 text-xl">
+                        {lang === 'en' ? "Burn the dark past to receive a new command." : "Queime o passado escuro para receber um novo comando."}
+                    </p>
+
+                    {stage === 0 && (
+                        <div className="animate-fadeIn mb-12 flex flex-col items-center w-full">
+                            <p className="text-xs text-zinc-500 uppercase tracking-widest mb-4">
+                                {lang === 'en' ? "The Past Simple (Regret):" : "O Past Simple (Arrependimento):"}
+                            </p>
+                            <div onClick={handleBurn} className="burden-card text-zinc-300 mx-auto w-full max-w-lg shadow-2xl rounded">
+                                "The crime I <span className="text-red-500 font-bold">committed</span>...<br/> in cold blood."
+                            </div>
+                            <p className="text-[10px] text-[#D4AF37] uppercase tracking-widest mt-6 animate-pulse">
+                                {lang === 'en' ? "Tap to surrender the past" : "Toque para entregar o passado"}
+                            </p>
+                        </div>
+                    )}
+
+                    {stage === 1 && (
+                        <div className="animate-fadeIn mb-12 h-[140px] flex items-center justify-center">
+                            <p className="text-3xl font-serif-classic italic text-[#D4AF37] animate-pulse drop-shadow-lg">
+                                {lang === 'en' ? "Forging a new path..." : "Forjando um novo caminho..."}
+                            </p>
+                        </div>
+                    )}
+
+                    {stage === 2 && (
+                        <div className="animate-fadeIn mb-12 w-full max-w-lg">
+                            <p className="text-xs text-emerald-500 uppercase tracking-widest mb-4">
+                                {lang === 'en' ? "The Imperative (Grace):" : "O Imperativo (Graça):"}
+                            </p>
+                            <div className="bg-[#051a10] border-2 border-emerald-500 p-8 rounded shadow-[0_0_40px_rgba(16,185,129,0.3)]">
+                                <p className="text-3xl font-serif-classic italic text-zinc-300">
+                                    "<span className="text-[#D4AF37] font-black text-4xl mb-2 block drop-shadow-md">Believe</span> my words."
+                                </p>
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="altar-fire rounded-t-3xl max-w-3xl">
+                        {Array.from({length: 20}).map((_, i) => (
+                            <div key={i} className="spark" style={{ left: `${Math.random() * 100}%`, animationDelay: `${Math.random() * 2}s` }}></div>
+                        ))}
+                    </div>
+                </div>
+            );
+        };
+
+        // --- NOVO COMPONENTE: The Blurred Scroll (Audio-Immersive) ---
+        const BlurredScrollSlide = ({ lang }) => {
+            const [listened, setListened] = useState(false);
+
+            return (
+                <div className="flex flex-col items-center justify-center h-full w-full max-w-4xl mx-auto p-8 animate-fadeIn text-center z-10">
+                    <h2 className="text-3xl font-sans-ui font-black mb-4 text-[#D4AF37] uppercase tracking-[0.2em] drop-shadow-md">
+                        {lang === 'en' ? "The Word Read Aloud" : "A Palavra Lida em Voz Alta"}
+                    </h2>
+                    <p className="text-xl text-zinc-300 font-serif-classic italic mb-10">
+                        {lang === 'en' ? "'I never learned to read...' Then listen." : "'Eu nunca aprendi a ler...' Então ouve."}
+                    </p>
+
+                    <div className="bible-card p-10 w-full mb-10 relative overflow-hidden flex flex-col items-center justify-center min-h-[250px]">
+                        <div className={`transition-all duration-[3000ms] text-4xl md:text-5xl font-serif-classic italic leading-relaxed text-zinc-200 ${listened ? 'clear-text' : 'blurred-text'}`}>
+                            "The Lord is my shepherd; I shall not want."
+                        </div>
+                    </div>
+
+                    {!listened ? (
+                        <button onClick={() => setListened(true)} className="btn-gold px-12 py-4">
+                            <Icon name="volume-high" className="mr-3" /> 
+                            {lang === 'en' ? "Listen to the Word" : "Ouvir a Palavra"}
+                        </button>
+                    ) : (
+                        <div className="animate-fadeIn">
+                            <p className="text-emerald-400 font-bold uppercase tracking-widest text-sm bg-[#051a10] border border-emerald-500/50 px-6 py-2 rounded-full">
+                                {lang === 'en' ? "The word affects your heart." : "A palavra afeta o teu coração."}
+                            </p>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        const PrayerRoom = ({ lang }) => {
+            const [recording, setRecording] = useState(false);
+            const [recorded, setRecorded] = useState(false);
+            const [progress, setProgress] = useState(0);
+
+            useEffect(() => {
+                let interval;
+                if (recording) { interval = setInterval(() => { setProgress(p => { if (p >= 100) { setRecording(false); setRecorded(true); return 100; } return p + 2; }); }, 100); }
+                return () => clearInterval(interval);
+            }, [recording]);
+
+            const statusText = recording ? (lang === 'en' ? "Recording..." : "A gravar...") : recorded ? (lang === 'en' ? "Prayer Sent" : "Oração Enviada") : (lang === 'en' ? "Tap to Record" : "Toque para Gravar");
+
+            return (
+                <div className="bible-card text-center animate-fadeIn mx-auto z-10 max-w-3xl">
+                    <p className="text-[#D4AF37] font-sans-ui font-bold tracking-[0.3em] text-[10px] uppercase mb-4">The Prayer Room</p>
+                    <h2 className="text-5xl font-serif-classic italic text-white mb-6">Speak Life</h2>
+                    <p className="text-zinc-400 font-sans-ui text-base mb-10">{lang === 'en' ? "Read the prayer aloud. Practice your pronunciation." : "Leia a oração em voz alta. Pratique a sua pronúncia."}</p>
+
+                    <div className="bg-[#110a0a] border-2 border-[#722F37]/50 p-8 md:p-12 mb-10 rounded shadow-inner">
+                        <p className="text-3xl font-serif-classic italic text-zinc-200 leading-relaxed">
+                            "Lord, I know the mistakes I <span className="text-red-400 font-bold">committed</span>.<br/><br/>
+                            But I <span className="text-emerald-400 font-bold">believe</span> your words.<br/><br/>
+                            Thank you for finding me.<br/><br/>
+                            Amen."
+                        </p>
+                    </div>
+
+                    <div className="flex flex-col items-center">
+                        <button onClick={() => { if(!recorded && !recording){ setRecording(true); setProgress(0); } }} disabled={recorded}
+                            className={`w-24 h-24 rounded-full flex items-center justify-center transition-all ${recording ? 'bg-red-900 text-red-500 animate-pulse shadow-[0_0_40px_rgba(220,38,38,0.6)]' : recorded ? 'bg-emerald-900 text-emerald-500 border-2 border-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.3)]' : 'bg-black border-2 border-[#D4AF37] text-[#D4AF37] hover:bg-[#1a170f] hover:scale-105 shadow-[0_0_15px_rgba(212,175,55,0.3)]'}`}>
+                            <Icon name={recorded ? "check" : "microphone-lines"} size={40} />
+                        </button>
+                        {recording && (<div className="w-56 h-3 bg-zinc-800 mt-6 rounded-full overflow-hidden border border-zinc-700"><div className="h-full bg-gradient-to-r from-red-600 to-red-400 transition-all" style={{width: `${progress}%`}}></div></div>)}
+                        <p className="mt-6 text-sm font-bold uppercase tracking-widest text-[#D4AF37]">{statusText}</p>
+                    </div>
+                </div>
+            );
+        };
+
+        const WritingSlide = ({ title, prompt, sub, lang }) => (
+            <div className="flex flex-col items-center justify-center h-full w-full max-w-4xl mx-auto p-8 animate-fadeIn z-10 text-center">
+                <Icon name="feather-pointed" size={40} className="text-[#D4AF37] mb-8 opacity-80" />
+                <h2 className="text-4xl font-sans-ui font-black mb-8 text-white uppercase tracking-widest">{t(title, lang)}</h2>
+                <p className="text-2xl text-zinc-300 font-serif-classic italic leading-relaxed mb-8">{t(sub, lang) || (lang === 'en' ? "Open the Theological Notes (Top Right) and write your reflection." : "Abra as Notas Teológicas (Canto Superior Direito) e escreva a sua reflexão.")}</p>
+                <div className="bg-[#1a0f0f]/80 border border-[#722F37]/50 p-8 w-full text-left">
+                    <p className="text-[#D4AF37] font-bold uppercase tracking-widest text-[10px] mb-4">Prompt</p>
+                    <p className="text-xl text-zinc-200 font-sans-ui font-light">{t(prompt, lang)}</p>
+                </div>
+            </div>
+        );
+
+        // ==========================================
+        // 📚 V4.0 SLIDES DATA (THE LOST SHEEP - A2)
+        // ==========================================
+        const SLIDES_DATA = [
+            { type: "intro" }, // 1
+            { type: "guide" }, // 2
+            { type: "compass" }, // 3 (Novo: 99 and 1)
+            { type: "relics" }, // 4 
+            { type: "illuminated" }, // 5 
+            { type: "video", title: { en: "The Scene", pt: "A Cena" }, start: 0, end: null, mission: { en: "Watch the scene carefully.", pt: "Assista à cena com atenção." } }, // 6
+            { type: "discussion", title: { en: "First Impressions", pt: "Primeiras Impressões" }, question: { en: "Why is the thief crying? What is he feeling?", pt: "Por que o ladrão está a chorar? O que ele está a sentir?" }, hint: { en: "I think he is crying because... / He feels very...", pt: "Eu acho que ele está a chorar porque... / Ele sente-se muito..." } }, // 7
+            { type: "script", speaker: { en: "The Thief", pt: "O Ladrão" }, quote: { en: "You know the crime I committed in cold blood.", pt: "Sabes o crime que cometi a sangue frio." }, analysis: { en: "He is stuck in his dark past and feels guilty.", pt: "Ele está preso no seu passado escuro e sente-se culpado." }, grammarNote: { en: "Past Simple: 'committed'. Used for finished actions in the past.", pt: "Past Simple: 'committed' (cometeu). Usado para ações terminadas no passado." } }, // 8
+            { type: "script", speaker: { en: "Jesus", pt: "Jesus" }, quote: { en: "Believe my words. Return to synagogue. Search Torah.", pt: "Acredita nas minhas palavras. Regressa à sinagoga. Procura na Torá." }, analysis: { en: "Jesus doesn't focus on the past. He gives instructions for the future.", pt: "Jesus não se foca no passado. Ele dá instruções para o futuro." }, grammarNote: { en: "Imperatives: Believe, Return, Search. Used for direct commands.", pt: "Imperativos: Acredita, Regressa, Procura. Usado para comandos diretos." } }, // 9
+            { type: "quiz", question: { en: "What is the thief's problem?", pt: "Qual é o problema do ladrão?" }, options: [{ en: "He doesn't have money.", pt: "Ele não tem dinheiro." }, { en: "He never learned to read.", pt: "Ele nunca aprendeu a ler." }, { en: "He is lost in the desert.", pt: "Ele está perdido no deserto." }], answerIndex: 1, explanation: { en: "Correct! So Jesus tells him to LISTEN to the word.", pt: "Correto! Por isso Jesus diz-lhe para OUVIR a palavra." } }, // 10
+            { type: "grammarPastVsImp" }, // 11
+            { type: "altar" }, // 12 (Novo: Confession Altar)
+            { type: "blurredScroll" }, // 13 (Novo: Audio-Immersive)
+            // HEAVY CONVERSATION ZONE
+            { type: "discussion", title: { en: "The Good Shepherd", pt: "O Bom Pastor" }, question: { en: "Would you leave 99 sheep to search for just 1?", pt: "Deixarias 99 ovelhas para procurar apenas 1?" }, hint: { en: "Yes, because every sheep is... / No, because it is risky to...", pt: "Sim, porque cada ovelha é... / Não, porque é arriscado..." } }, // 14
+            { type: "discussion", title: { en: "The Heavy Past", pt: "O Passado Pesado" }, question: { en: "Why is it hard to forget our past mistakes?", pt: "Por que é difícil esquecer os nossos erros do passado?" }, hint: { en: "It is hard because we feel... / Because people usually...", pt: "É difícil porque sentimos... / Porque as pessoas geralmente..." } }, // 15
+            { type: "discussion", title: { en: "The 'Would You' Dilemma", pt: "O Dilema" }, question: { en: "Would you help someone who did something terrible in the past?", pt: "Ajudarias alguém que fez algo terrível no passado?" }, hint: { en: "I would try to help if they... / It depends on...", pt: "Eu tentaria ajudar se eles... / Depende de..." } }, // 16
+            { type: "discussion", title: { en: "Action", pt: "Ação" }, question: { en: "Jesus gave him simple commands (Return, listen). What is your next step in life?", pt: "Jesus deu-lhe comandos simples (Regressa, ouve). Qual é o teu próximo passo na vida?" }, hint: { en: "My next step is to... / I need to start to...", pt: "O meu próximo passo é... / Eu preciso começar a..." } }, // 17
+            { type: "prayer" }, // 18
+            { type: "writing", title: { en: "The Scribe's Journal", pt: "O Diário do Escriba" }, prompt: { en: "Write a letter to yourself. Use IMPERATIVES. (e.g., 'Do not give up. Keep walking.')", pt: "Escreve uma carta para ti mesmo. Usa IMPERATIVOS. (ex: 'Não desistas. Continua a caminhar.')" } }, // 19
+            { type: "end" } // 20
+        ];
+
+        // --- MAIN APPLICATION ---
+        function App() {
+            const [started, setStarted] = useState(false);
+            const [slideIdx, setSlideIdx] = useState(0);
+            const [isAppFullscreen, setIsAppFullscreen] = useState(false);
+            const [lang, setLang] = useState('en');
+
+            useEffect(() => {
+                const handleFsChange = () => setIsAppFullscreen(!!document.fullscreenElement);
+                document.addEventListener('fullscreenchange', handleFsChange);
+                return () => document.removeEventListener('fullscreenchange', handleFsChange);
+            }, []);
+
+            const toggleAppFullscreen = async () => {
+                try {
+                    if (!document.fullscreenElement) {
+                        if (document.documentElement.requestFullscreen) { await document.documentElement.requestFullscreen(); }
+                    } else {
+                        if (document.exitFullscreen) { await document.exitFullscreen(); }
+                    }
+                } catch (e) { console.warn("Fullscreen issue:", e); }
+            };
+
+            const toggleLang = () => setLang(l => l === 'en' ? 'pt' : 'en');
+            const next = () => { if (slideIdx < SLIDES_DATA.length - 1) setSlideIdx(s => s + 1); };
+            const prev = () => { if (slideIdx > 0) setSlideIdx(s => s - 1); };
+
+            if (!started) {
+                return (
+                    <div className="w-full h-screen relative flex flex-col">
+                        <div className="leather-overlay"></div>
+                        <TeacherGuideSlide startLesson={() => setStarted(true)} lang={lang} />
+                    </div>
+                );
+            }
+
+            const current = SLIDES_DATA[slideIdx];
+
+            const renderSlide = () => {
+                switch (current.type) {
+                    case "intro": return <CoverSlide nextSlide={next} />;
+                    case "guide": return <TeacherGuideSlide startLesson={() => setSlideIdx(2)} lang={lang} />; 
+                    case "compass": return <NinetyNineSlide lang={lang} nextAction={next} />;
+                    case "discussion": return <DiscussionSlide title={current.title} question={current.question} hint={current.hint} verse={current.verse} lang={lang} />;
+                    case "relics": return <HolyRelics lang={lang} />;
+                    case "illuminated": return <IlluminatedText lang={lang} />;
+                    case "scholar": return <ScholarDeskSlide title={current.title} content={current.content} lang={lang} />;
+                    case "dilemma": return <DilemmaSlide title={current.title} question={current.question} hint={current.hint} lang={lang} />;
+                    case "video": return <VideoSlide title={current.title} start={current.start} end={current.end} mission={current.mission} lang={lang} />;
+                    case "script": return <ScriptSlide speaker={current.speaker} quote={current.quote} analysis={current.analysis} grammarNote={current.grammarNote} lang={lang} />;
+                    case "quiz": return <QuizSlide question={current.question} options={current.options} answerIndex={current.answerIndex} explanation={current.explanation} nextAction={next} lang={lang} />;
+                    case "grammarPastVsImp": return <GrammarPastVsImpSlide lang={lang} />;
+                    case "altar": return <ConfessionAltarSlide nextStep={next} lang={lang} />;
+                    case "blurredScroll": return <BlurredScrollSlide lang={lang} />;
+                    case "grammarCanCould": return <GrammarCanCouldSlide lang={lang} />;
+                    case "grammarSandbox": return <GrammarSandboxSlide lang={lang} />;
+                    case "prayer": return <PrayerRoom lang={lang} />;
+                    case "writing": return <WritingSlide title={current.title} prompt={current.prompt} sub={current.sub} lang={lang} />;
+                    case "end":
+                        return (
+                        <div className="flex flex-col items-center justify-center h-full w-full max-w-4xl mx-auto text-center p-8 animate-fadeIn z-10">
+                            <Icon name="dove" size={80} className="text-[#D4AF37] mb-8 opacity-80" />
+                            <h1 className="text-5xl md:text-7xl font-serif-classic italic mb-6 text-white tracking-tight">Go in peace.</h1>
+                            <p className="text-[#D4AF37] font-sans-ui text-sm font-bold tracking-[0.3em] uppercase mb-12">
+                                {lang === 'en' ? "You are found." : "Você foi encontrado."}
+                            </p>
+                            <button className="btn-gold px-12 py-4 text-sm" onClick={() => window.location.reload()}>Return to Menu</button>
+                        </div>
+                        );
+                    default: return <div className="text-white text-2xl z-10">Error loading module.</div>;
+                }
+            };
+
+            return (
+                <div className="w-full h-screen font-sans-ui overflow-hidden flex flex-col relative selection:bg-[#D4AF37]/30 selection:text-white">
+                    <div className="leather-overlay"></div>
+                    <div className="divine-glow"></div>
+                    <div className="cross-watermark"><Icon name="cross" /></div>
+                    <div className="gold-foil-frame"></div>
+                    <div className="ribbon-bookmark"></div>
+
+                    <TeacherTools isFs={isAppFullscreen} toggleFs={toggleAppFullscreen} lang={lang} toggleLang={toggleLang} />
+
+                    <div className="flex-1 relative z-10 w-full h-full overflow-y-auto pt-10 pb-24 flex items-center justify-center">
+                        {renderSlide()}
+                    </div>
+
+                    {/* Footer / Controls */}
+                    {slideIdx > 0 && (
+                        <div className="z-50 w-full p-6 absolute bottom-0 flex flex-col items-center">
+                            <div className="max-w-5xl w-full flex flex-col gap-4">
+                                <div className="flex justify-between items-center w-full relative">
+                                    <button onClick={prev} disabled={slideIdx === 0} className="text-zinc-500 hover:text-[#D4AF37] font-bold text-xs uppercase tracking-widest disabled:opacity-30 transition-colors flex items-center gap-2">
+                                        <Icon name="arrow-left" size={14} /> {lang === 'en' ? 'Back' : 'Anterior'}
+                                    </button>
+                                    
+                                    <div className="absolute left-1/2 transform -translate-x-1/2 text-zinc-600 font-bold tracking-[0.2em] text-[10px] uppercase hidden sm:block">
+                                        {lang === 'en' ? 'PAGE' : 'PÁGINA'} {slideIdx + 1} {lang === 'en' ? 'OF' : 'DE'} {SLIDES_DATA.length}
+                                    </div>
+
+                                    <button onClick={next} disabled={slideIdx === SLIDES_DATA.length - 1} className="text-[#D4AF37] hover:text-white font-bold text-xs uppercase tracking-widest disabled:opacity-30 transition-colors flex items-center gap-2">
+                                        {lang === 'en' ? 'Next' : 'Próximo'} <Icon name="arrow-right" size={14} />
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+        
+        const rootElement = document.getElementById('root');
+        const root = ReactDOM.createRoot(rootElement);
+        root.render(<App />);
+    </script>
+</body>
+</html>
